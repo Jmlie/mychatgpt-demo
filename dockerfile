@@ -1,8 +1,14 @@
-
-FROM node:alpine
-RUN mkdir -p /usr/src
-WORKDIR /usr/src
-COPY . /usr/src
+# ---- Dependencies ----
+FROM node:19.7.0 AS dependencies
+WORKDIR /app
+COPY package.json /app
 RUN npm install
-EXPOSE 3000
-CMD npm run start -- --port 3000 --host 0.0.0.0
+
+# ---- RUN ----
+FROM dependencies AS RUN
+WORKDIR /app
+COPY . /app
+COPY .env.example /app/.env
+ENV PORT=3000
+VOLUME ["./env"]
+CMD [ "npm", "run", "dev", "--", "--port", "3000", "--host", "0.0.0.0"]
