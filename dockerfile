@@ -1,14 +1,11 @@
-# ---- Dependencies ----
-FROM node:19.7.0 AS dependencies
-WORKDIR /app
-COPY package.json /app
-RUN npm install
-
-# ---- RUN ----
-FROM dependencies AS RUN
+FROM node:alpine
+RUN mkdir -p /app
 WORKDIR /app
 COPY . /app
-COPY .env.example /app/.env
+RUN npm install
+RUN npm run build
+EXPOSE 3000
+ENV HOST=0.0.0.0
 ENV PORT=3000
-VOLUME ["./env"]
-CMD [ "npm", "run", "dev", "--", "--port", "3000", "--host", "0.0.0.0"]
+ENV NODE_ENV=production
+CMD node dist/server/entry.mjs
